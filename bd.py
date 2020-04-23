@@ -13,7 +13,7 @@ class BD():
 
             self.__conectar()
             cursor = self.__conexion.cursor()
-            sql='SELECT * FROM Producto'
+            sql = 'SELECT * FROM Producto;'
 
             cursor.execute(sql)
             resultados = cursor.fetchall()
@@ -28,9 +28,9 @@ class BD():
 
             return None
 
-    def buscar(self,textoBuscar):
-        
-        if(textoBuscar==''):
+    def buscar(self, textoBuscar):
+
+        if(textoBuscar == ''):
 
             return self.buscarTodo()
 
@@ -41,12 +41,12 @@ class BD():
                 self.__conectar()
                 cursor = self.__conexion.cursor()
 
-                sql='''SELECT * FROM Producto WHERE
+                sql = '''SELECT * FROM Producto WHERE
                     id_producto LIKE "%{0}%" OR
                     descripcion_producto LIKE "%{0}%" OR
                     cantidad_producto LIKE "%{0}%" OR
                     unidad_producto LIKE "%{0}%" OR
-                    lugar_producto LIKE "%{0}%"'''.format(textoBuscar)
+                    lugar_producto LIKE "%{0}%";'''.format(textoBuscar)
 
                 cursor.execute(sql)
                 resultados = cursor.fetchall()
@@ -61,3 +61,46 @@ class BD():
 
                 return None
 
+    def buscarId(self, idBuscar):
+
+        try:
+
+            self.__conectar()
+            cursor = self.__conexion.cursor()
+
+            sql = 'SELECT * FROM Producto WHERE id_producto = {};'.format(idBuscar)
+
+            cursor.execute(sql)
+            resultados = cursor.fetchall()
+
+            self.__conexion.close()
+
+            return resultados
+
+        except Error as e:
+
+            print("Error {}: {}".format(e.args[0], e.args[1]))
+
+            return None
+
+    def actualizar(self, producto):
+        try:
+
+            self.__conectar()
+            cursor = self.__conexion.cursor()
+
+            sql = '''UPDATE Producto SET
+                descripcion_producto = "{}",
+                cantidad_producto = {},
+                unidad_producto = "{}",
+                lugar_producto = "{}"
+                WHERE id_producto = {};'''.format(producto[1], producto[2], producto[3], producto[4], producto[0])
+
+            cursor.execute(sql)
+
+            self.__conexion.commit()
+            self.__conexion.close()
+
+        except Error as e:
+
+            print("Error {}: {}".format(e.args[0], e.args[1]))
