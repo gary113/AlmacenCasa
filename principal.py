@@ -15,6 +15,7 @@ class App():
         self.ventana.title('Tabla de productos')
         self.ventana.minsize(700, 300)
         self.ventana.geometry('+500+300')
+        self.ventana.iconphoto(True, PhotoImage(file='img/icono.png'))
         self.primerFrame = Frame(self.ventana)
         self.segundoFrame = Frame(self.ventana)
         self.tercerFrame = Frame(self.ventana)
@@ -66,14 +67,14 @@ class App():
         self.lblDescripcion = Label(self.tercerFrame, text='Descripción:')
         self.entryDescripcion = Entry(self.tercerFrame, textvariable=self.textoDescripcion)
         self.lblCantidad = Label(self.tercerFrame, text='Cantidad:')
-        self.entryCantidad = Entry(self.tercerFrame, textvariable=self.textoCantidad,state=DISABLED)
+        self.entryCantidad = Entry(self.tercerFrame, textvariable=self.textoCantidad, state=DISABLED)
         self.lblUnidades = Label(self.tercerFrame, text='Unidades:')
         self.entryUnidades = Entry(self.tercerFrame, textvariable=self.textoUnidades)
         self.lblLugar = Label(self.tercerFrame, text='Lugar:')
         self.entryLugar = Entry(self.tercerFrame, textvariable=self.textoLugar)
-        self.lblOpciones = Label(self.tercerFrame,text='Opciones:')
-        self.lblCambio = Label(self.tercerFrame,text='Cambio:')
-        self.entryCambio = Entry(self.tercerFrame, textvariable=self.textoCambio,width=6)
+        self.lblOpciones = Label(self.tercerFrame, text='Opciones:')
+        self.lblCambio = Label(self.tercerFrame, text='Cambio:')
+        self.entryCambio = Entry(self.tercerFrame, textvariable=self.textoCambio, width=6)
         self.btnActualizar = Button(self.tercerFrame, text='Actualizar', command=self.actualizar)
 
         ####################
@@ -111,8 +112,8 @@ class App():
         self.tercerFrame.grid(row=2, column=0, sticky=EW, padx=5, pady=5)
 
         self.SeparadorHorizontal.grid(row=0, column=0, columnspan=4, sticky=EW)
-        self.SeparadorVertical.grid(row=0,column=2,rowspan=7,sticky=NS)
-        self.lblDetalles.grid(row=1, column=0,columnspan=2)
+        self.SeparadorVertical.grid(row=0, column=2, rowspan=7, sticky=NS)
+        self.lblDetalles.grid(row=1, column=0, columnspan=2)
         self.lblId.grid(row=2, column=0)
         self.entryId.grid(row=2, column=1, sticky=EW)
         self.lblDescripcion.grid(row=3, column=0)
@@ -123,11 +124,10 @@ class App():
         self.entryUnidades.grid(row=5, column=1, sticky=EW)
         self.lblLugar.grid(row=6, column=0)
         self.entryLugar.grid(row=6, column=1, sticky=EW)
-        self.lblOpciones.grid(row=1,column=3)
-        self.lblCambio.grid(row=3,column=3)
-        self.entryCambio.grid(row=4,column=3)
-        self.btnActualizar.grid(row=5,column=3,rowspan=2,sticky=NSEW)
-        
+        self.lblOpciones.grid(row=1, column=3)
+        self.lblCambio.grid(row=3, column=3)
+        self.entryCambio.grid(row=4, column=3)
+        self.btnActualizar.grid(row=5, column=3, rowspan=2, sticky=NSEW)
 
         ####################
 
@@ -142,32 +142,31 @@ class App():
 
     def actualizar(self):
 
-        if(self.listaEntrys[1].get()!=''):
+        if(self.listaEntrys[1].get() != ''):
 
-            producto=[]
+            producto = []
 
             for elemento in self.listaEntrys[1:]:
                 producto.append(elemento.get())
 
-            if(self.textoCambio.get()!=''):
-                producto[2]=float(producto[2])+float(self.entryCambio.get())
-       
-            aver=self.baseDatos.actualizar(producto)
+            if(self.textoCambio.get() != ''):
+                producto[2] = float(producto[2])+float(self.entryCambio.get())
+
+            aver = self.baseDatos.actualizar(producto)
 
             for elemento in self.listaEntrys[1:]:
                 elemento.set('')
-            
-            self.textoCambio.set('')
-            
-            self.buscar()
 
+            self.textoCambio.set('')
+
+            self.buscar()
 
     def seleccionTabla(self, evento):
 
         item = self.tabla.identify('item', evento.x, evento.y)
         values = self.tabla.item(item, 'values')
 
-        if(len(values)>0):
+        if(len(values) > 0):
 
             self.listaEntrys[1].set(self.tabla.item(item, 'text'))
 
@@ -197,7 +196,7 @@ class App():
 
         for elemento in self.listaEntrys:
             elemento.set('')
-        
+
         self.textoCambio.set('')
 
         self.buscar()

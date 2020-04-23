@@ -90,13 +90,13 @@ class BD():
             cursor = self.__conexion.cursor()
 
             sql = '''UPDATE Producto SET
-                descripcion_producto = "{}",
-                cantidad_producto = {},
-                unidad_producto = "{}",
-                lugar_producto = "{}"
-                WHERE id_producto = {};'''.format(producto[1], producto[2], producto[3], producto[4], producto[0])
+                descripcion_producto = %s,
+                cantidad_producto = %s,
+                unidad_producto = %s,
+                lugar_producto = %s
+                WHERE id_producto = %s;'''
 
-            cursor.execute(sql)
+            cursor.execute(sql, (producto[1], producto[2], producto[3], producto[4], producto[0]))
 
             self.__conexion.commit()
             self.__conexion.close()
