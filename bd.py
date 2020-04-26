@@ -30,7 +30,7 @@ class BD():
 
     def buscar(self, textoBuscar):
 
-        if(textoBuscar == ''):
+        if textoBuscar == '':
 
             return self.buscarTodo()
 
@@ -101,6 +101,55 @@ class BD():
             self.__conexion.commit()
             self.__conexion.close()
 
+            return True
+
         except Error as e:
 
             print("Error {}: {}".format(e.args[0], e.args[1]))
+
+            return False
+
+    def aniadir(self, producto):
+
+        try:
+
+            self.__conectar()
+            cursor = self.__conexion.cursor()
+
+            sql = '''INSERT INTO Producto (id_producto, descripcion_producto, cantidad_producto, unidad_producto, lugar_producto) 
+                  VALUES (NULL, %s, %s, %s, %s);'''
+
+            cursor.execute(sql, (producto[1], producto[2], producto[3], producto[4]))
+
+            self.__conexion.commit()
+            self.__conexion.close()
+
+            return True
+
+        except Error as e:
+
+            print("Error {}: {}".format(e.args[0], e.args[1]))
+
+            return False
+
+    def eliminar(self, idProducto):
+
+        try:
+
+            self.__conectar()
+            cursor = self.__conexion.cursor()
+
+            sql = '''DELETE FROM Producto WHERE id_producto = %s;'''
+
+            cursor.execute(sql, idProducto)
+
+            self.__conexion.commit()
+            self.__conexion.close()
+
+            return True
+
+        except Error as e:
+
+            print("Error {}: {}".format(e.args[0], e.args[1]))
+
+            return False
