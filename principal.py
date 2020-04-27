@@ -13,18 +13,25 @@ class App():
 
         self.ventana = Tk()
         self.ventana.title('Tabla de productos')
-        self.ventana.minsize(700, 300)
-        self.ventana.geometry('+600+300')
+        self.ventana.minsize(1000, 500)
+        self.ventana.geometry('1000x500+500+300')
 
         if sys.platform.startswith('win'):
             self.ventana.iconbitmap(default='iconos/icono.ico')
         else:
             self.ventana.iconphoto(True, PhotoImage(file='iconos/icono.png'))
 
-        self.frameBuscar = Frame(self.ventana)
-        self.frameTabla = Frame(self.ventana)
-        self.frameDetalles = Frame(self.ventana)
-        self.frameOpciones = Frame(self.ventana)
+        self.pestanias = ttk.Notebook(self.ventana)
+        self.frameProductos = Frame(self.pestanias)
+        self.frameHistorial = Frame(self.pestanias)
+
+        self.frameBuscar = Frame(self.frameProductos)
+        self.frameTabla = Frame(self.frameProductos)
+        self.frameDetalles = Frame(self.frameProductos)
+        self.frameOpciones = Frame(self.frameProductos)
+
+        self.frameBuscarHistorial = Frame(self.frameHistorial)
+        self.frameTablaHistorial = Frame(self.frameHistorial)
 
         self.textoBuscar = StringVar()
         self.textoId = StringVar()
@@ -35,12 +42,22 @@ class App():
         self.textoCambio = StringVar()
         self.opcionRadioButton = IntVar()
 
+        self.textoBuscarHistorial = StringVar()
+
         self.tuplaTextoEntrys = (self.textoBuscar, self.textoId, self.textoDescripcion, self.textoCantidad, self.textoUnidades, self.textoLugar)
         self.listaIdsTabla = []
+        self.listaIdsTablaHistorial = []
 
         ####################
 
         #Declaración de widgets:
+
+        #En el notebook pestanias:
+
+        self.pestanias.add(self.frameProductos, text='Productos')
+        self.pestanias.add(self.frameHistorial, text='Historial')
+
+        #En el frame Productos: ----------
 
         #En el frame buscar:
 
@@ -60,7 +77,7 @@ class App():
         self.tabla.heading('#4', text='Lugar')
         self.tabla.column("#0", width=50, stretch=False)
         self.tabla.column("#2", width=100, stretch=False)
-        self.tabla.column("#3", width=150, stretch=False)
+        self.tabla.column("#3", width=120, stretch=False)
         self.scrollTabla = ttk.Scrollbar(self.frameTabla, orient=VERTICAL, command=self.tabla.yview)
         self.tabla.configure(yscrollcommand=self.scrollTabla.set)
         self.tabla.bind('<Button-1>', self.seleccionTabla)
@@ -94,22 +111,66 @@ class App():
         self.rdbEliminar = Radiobutton(self.frameOpciones, text='Eliminar', value=2,
                                        variable=self.opcionRadioButton, command=self.seleccionRbdEliminar)
 
+        #En el frame historial: ----------
+
+        #En el frame buscar historial:
+
+        self.lblBuscarHistorial = Label(self.frameBuscarHistorial, text='Buscar:')
+        self.entryBuscarHistorial = Entry(self.frameBuscarHistorial, textvariable=self.textoBuscarHistorial)
+        self.btnBuscarHistorial = Button(self.frameBuscarHistorial, text='Buscar', command=self.buscarHistorial)
+        self.btnCancelarHistorial = Button(self.frameBuscarHistorial, text='Cancelar', command=self.cancelarHistorial)
+        self.entryBuscarHistorial.bind('<Return>', self.buscarHistorial)
+
+        #En el frame tabla historial:
+
+        self.tablaHistorial = ttk.Treeview(self.frameTablaHistorial, selectmode=BROWSE, columns=('#1', '#2', '#3', '#4', '#5', '#6', '#7'))
+        self.tablaHistorial.heading('#0', text='Acción')
+        self.tablaHistorial.heading('#1', text='Revisión')
+        self.tablaHistorial.heading('#2', text='Fecha y hora')
+        self.tablaHistorial.heading('#3', text='ID')
+        self.tablaHistorial.heading('#4', text='Descripción')
+        self.tablaHistorial.heading('#5', text='Cantidad')
+        self.tablaHistorial.heading('#6', text='Unidades')
+        self.tablaHistorial.heading('#7', text='Lugar')
+        self.tablaHistorial.column("#0", width=80, stretch=False)
+        self.tablaHistorial.column("#1", width=80, stretch=False)
+        self.tablaHistorial.column("#2", width=150, stretch=False)
+        self.tablaHistorial.column("#3", width=50, stretch=False)
+        self.tablaHistorial.column("#5", width=100, stretch=False)
+        self.tablaHistorial.column("#6", width=120, stretch=False)
+        self.scrollTablaHistorial = ttk.Scrollbar(self.frameTablaHistorial, orient=VERTICAL, command=self.tablaHistorial.yview)
+        self.tablaHistorial.configure(yscrollcommand=self.scrollTablaHistorial.set)
+
         ####################
 
         #Grid() de los contenedores y widgets:
 
+        self.pestanias.grid(row=0, column=0, sticky=NSEW, padx=5, pady=5)
+        self.frameBuscar.grid(row=0, column=0, sticky=EW, padx=5, pady=5)
+        self.frameTabla.grid(row=1, column=0, sticky=NSEW, padx=5, pady=5)
+        self.frameDetalles.grid(row=3, column=0, sticky=EW, padx=5)
+        self.frameOpciones.grid(row=2, column=0, sticky=EW, padx=5)
+        self.frameBuscarHistorial.grid(row=0, column=0, sticky=EW, padx=5, pady=5)
+        self.frameTablaHistorial.grid(row=1, column=0, sticky=NSEW, padx=5, pady=5)
+
         Grid.columnconfigure(self.ventana, 0, weight=1)
-        Grid.rowconfigure(self.ventana, 1, weight=1)
+        Grid.rowconfigure(self.ventana, 0, weight=1)
+        Grid.columnconfigure(self.frameProductos, 0, weight=1)
+        Grid.rowconfigure(self.frameProductos, 1, weight=1)
+        Grid.columnconfigure(self.frameHistorial, 0, weight=1)
+        Grid.rowconfigure(self.frameHistorial, 1, weight=1)
+
         Grid.columnconfigure(self.frameBuscar, 1, weight=1)
         Grid.columnconfigure(self.frameTabla, 0, weight=1)
         Grid.rowconfigure(self.frameTabla, 0, weight=1)
         Grid.columnconfigure(self.frameDetalles, 1, weight=1)
         Grid.columnconfigure(self.frameOpciones, 4, weight=1)
 
-        self.frameBuscar.grid(row=0, column=0, sticky=EW, padx=5, pady=5)
-        self.frameTabla.grid(row=1, column=0, sticky=NSEW, padx=5, pady=5)
-        self.frameDetalles.grid(row=3, column=0, sticky=EW, padx=5, pady=5)
-        self.frameOpciones.grid(row=2, column=0, sticky=EW, padx=5, pady=5)
+        Grid.columnconfigure(self.frameBuscarHistorial, 1, weight=1)
+        Grid.columnconfigure(self.frameTablaHistorial, 0, weight=1)
+        Grid.rowconfigure(self.frameTablaHistorial, 0, weight=1)
+
+        #En el frame Productos ----------
 
         #En el frame buscar:
 
@@ -149,6 +210,20 @@ class App():
         self.rdbActualizar.grid(row=1, column=1)
         self.rdbAniadir.grid(row=1, column=2)
         self.rdbEliminar.grid(row=1, column=3)
+
+        #En el frame historial ----------
+
+        #En el frame buscar historial
+
+        self.lblBuscarHistorial.grid(row=0, column=0)
+        self.entryBuscarHistorial.grid(row=0, column=1, sticky=EW)
+        self.btnBuscarHistorial.grid(row=0, column=2)
+        self.btnCancelarHistorial.grid(row=0, column=3)
+
+        #En el frame tabla historial
+
+        self.tablaHistorial.grid(row=0, column=0, sticky=NSEW)
+        self.scrollTablaHistorial.grid(row=0, column=1, sticky=NS)
 
         ####################
 
@@ -339,6 +414,34 @@ class App():
             return True
         except ValueError:
             return False
+
+    def buscarHistorial(self, *evento):
+
+        if self.textoBuscarHistorial.get() != '':
+
+            self.limpiarTablaHistorial()
+            resultados = self.baseDatos.buscarHistorial(self.textoBuscarHistorial.get())
+
+            if resultados != None:
+                for elemento in resultados:
+                    self.listaIdsTablaHistorial.append(self.tablaHistorial.insert('', END, text=elemento[0], values=elemento[1:]))
+
+        else:
+
+            self.limpiarTablaHistorial()
+
+    def cancelarHistorial(self):
+
+        self.textoBuscarHistorial.set('')
+        self.limpiarTablaHistorial()
+
+    def limpiarTablaHistorial(self):
+
+        if len(self.listaIdsTablaHistorial) > 0:
+            for elemento in self.listaIdsTablaHistorial:
+                self.tablaHistorial.delete(elemento)
+
+            self.listaIdsTablaHistorial.clear()
 
     ####################
 
